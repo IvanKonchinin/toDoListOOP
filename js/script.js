@@ -8,6 +8,7 @@ class Todo {
     this.todoCompleted = document.querySelector(todoCompleted);
     this.todoContainer = document.querySelector(todoContainer);
     this.todoData = new Map(JSON.parse(localStorage.getItem('toDoList')));
+    
   }
 
   addToStorage() {
@@ -21,19 +22,25 @@ class Todo {
     this.addToStorage();
   }
 
-  createItem = (todo) => {
+  toDoEdit(elem) {
+    elem.setAttribute('contenteditable', true);
+    elem.focus();
+  }
+  
+
+  createItem = (item) => {
     const li = document.createElement('li');
     li.classList.add('todo-item');
-    li.key = todo.key;
+    li.key = item.key;
     li.insertAdjacentHTML('beforeend', `
-      	<span class="text-todo">${todo.value}</span>
+      	<span class="text-todo">${item.value}</span>
         <div class="todo-buttons">
           <button class="todo-edit"></button>
 					<button class="todo-remove"></button>
 					<button class="todo-complete"></button>
-				</div>`);
-
-    if(todo.completed){
+        </div>`);
+    
+    if(item.completed){
       this.todoCompleted.append(li);
     } else {
       this.todoList.append(li);
@@ -61,7 +68,6 @@ class Todo {
   }
 
   deleteItem(item) {
-    //найти по ключу и удалить из MAp
     let currentElem = item.closest('.todo-item');
     this.todoData.forEach((elem, key, map) => {
       if(key === currentElem.key) map.delete(key); 
@@ -70,7 +76,6 @@ class Todo {
   }
 
   completedItem(item) {
-    //перебрать forEach todoDat найти через ключ элемент поменять знач completed
     let currentElem = item.closest('.todo-item');
     this.todoData.forEach((elem, key) => {
       if (currentElem.key === key){
@@ -81,23 +86,43 @@ class Todo {
   }
 
   handler() {
-    //делегирование на род. контейнер определить на какую кнопку кликнули и вызвать метод completed или delete
     this.todoContainer.addEventListener('click', (e) => {
       let target = e.target;
        if(target.matches('.todo-complete')) {
-         this.completedItem(target);
+         this.hide(target.closest('.todo-item'), ()=>{this.completedItem(target)});
        } else if (target.matches('.todo-remove')){
-         this.deleteItem(target);
-       } else {
+         this.hide(target.closest('.todo-item'), ()=>{this.deleteItem(target)});
+       } else if(target.matches('.todo-edit')){
+         target = target.closest('.todo-item');
+         this.toDoEdit(target);
+       }
+       else {
          return;
        }
     });
   }
 
+  //animation hide
+  hide(elem, callback) {
+  let countOpacity = 1;
+  let hideInterval = () =>{
+    let hideAnime = requestAnimationFrame(hideInterval);
+    countOpacity -= 0.1;
+    if (countOpacity > 0) {
+      elem.style.opacity = countOpacity;
+    } else {
+      cancelAnimationFrame(hideAnime);
+    }
+  }
+  hideInterval(); 
+  setTimeout(()=>{callback()},500);
+}
+
   init() {
     this.form.addEventListener('submit', this.addTodo.bind(this));
     this.render();
     this.handler();
+    
   }
 }
 

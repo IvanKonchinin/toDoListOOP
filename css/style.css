@@ -129,7 +129,6 @@ body {
     font-weight: 500;
     color: #444;
     line-height: 22px;
-
     background: #fff;
     border-radius: 5px;
     position: relative;
@@ -137,6 +136,11 @@ body {
     margin: 0 0 10px 0;
     padding: 14px 100px 14px 14px;
     word-break: break-word;
+    transition:0.5s;
+    -webkit-transition:0.5s;
+    -moz-transition:0.5s;
+    -ms-transition:0.5s;
+    -o-transition:0.5s;
 }
 
 .todo-item:last-of-type {
@@ -229,3 +233,4 @@ body {
     font-size: 12px;
     color: #aaa;
 }
+
